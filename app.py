@@ -67,8 +67,8 @@ def precipitation():
     precipitation = []
     for date, prcp in precip:
         precip_dict = {}
-        precip_dict["date"] = date
-        precip_dict["prcp"] = prcp
+        precip_dict[date] = prcp
+        #precip_dict["prcp"] = prcp
         precipitation.append(precip_dict)
 
     return jsonify(precipitation)
@@ -81,7 +81,7 @@ def stations():
     session = Session(engine)
 
     #Return a JSON list of stations from the dataset - list includes observation count
-    stationtempobsmost = session.query(Measurement.station, Station.name, func.count(Measurement.station))\
+    stationtempobsmost = session.query(Measurement.station, Station.name, Station.latitude, Station.longitude, Station.elevation, func.count(Measurement.station))\
         .filter(Measurement.station == Station.station)\
         .group_by(Measurement.station)\
         .order_by(func.count(Measurement.station).desc()).all()
@@ -89,10 +89,13 @@ def stations():
     session.close()
 
     stationlist = []
-    for station, name, count in stationtempobsmost:
+    for station, name, lat, long, elev, count in stationtempobsmost:
         station_dict = {}
         station_dict["station_id"] = station
         station_dict["name"] = name
+        station_dict["lat"] = lat
+        station_dict["long"] = long
+        station_dict["elev"] = elev
         station_dict["count"] = count
         stationlist.append(station_dict)
 
