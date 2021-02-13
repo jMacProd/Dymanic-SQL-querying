@@ -1,4 +1,5 @@
 import numpy as np
+import datetime as dt
 
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
@@ -44,8 +45,13 @@ def home():
         f"<a href='/api/v1.0/precipitation'>/api/v1.0/precipitation</a><br/>"
         f"<a href='/api/v1.0/stations'>/api/v1.0/stations</a><br/>"
         f"<a href='/api/v1.0/tobs'>/api/v1.0/tobs</a><br/>"
+        f"<a href='#'>/api/v1.0/start</a><br/>"
+        f"<a href='#'>/api/v1.0/start/end</a>"
     )
 
+#################################################
+# Precipitation
+#################################################
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     print("Server received request for 'precipitation' page...")
@@ -73,7 +79,9 @@ def precipitation():
 
     return jsonify(precipitation)
 
-
+#################################################
+# Stations
+#################################################
 @app.route("/api/v1.0/stations")
 def stations():
     print("Server received request for 'stations' page...")
@@ -101,7 +109,9 @@ def stations():
 
     return jsonify(stationlist)
 
-
+#################################################
+# tobs 
+#################################################
 @app.route("/api/v1.0/tobs")
 def tobs():
     print("Server received request for 'tobs' page...")
@@ -138,6 +148,56 @@ def tobs():
         waiheelist.append(waihee_dict)
 
     return jsonify(waiheelist)
+
+#################################################
+# Start Date 
+#################################################
+#@app.route("/api/v1.0/justice-league/real_name/<real_name>")
+    # I think how the justice one works is real_name is the index, <real_name> is the value that you input
+    # So for start date, judging by the provided the the actual date is the index>?
+@app.route("/api/v1.0/<start>")
+
+#def justice_league_by_real_name(real_name):
+def start_date(start):
+    print("Server received request for 'Start Date' page...")
+
+    session = Session(engine)
+
+    #convert to datetime
+    #startdt = dt.datetime.strptime(start, '%Y/%m/%d')
+    #enddt = dt.datetime.strptime('2017-08-23', '%Y/%m/%d')
+
+    #Calculate start and end dates for the prevoius year
+    #start_date = startdt - dt.timedelta(days=365)
+    
+    Startsummary = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), \
+        func.max(Measurement.tobs)).\
+        filter(Measurement.date >= start).filter(Measurement.date <= '2017-08-23').all()
+
+    session.close()
+
+    startlist = [
+    #for min, av, max  in Startsummary:
+    #start_dict =
+    {
+    "minimum": Startsummary[0][0],
+    "average": Startsummary[0][1],
+    "maximum": Startsummary[0][2]}]
+    #waiheelist.append(waihee_dict)
+
+    return jsonify(startlist)
+
+    
+
+
+
+    
+
+#################################################
+# Start End Date 
+#################################################
+#@app.route("/api/v1.0/<start>/<end>")
+#def end_date(end):
 
 
 #def justice_league_character(real_name):
