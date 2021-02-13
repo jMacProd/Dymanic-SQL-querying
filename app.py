@@ -40,13 +40,28 @@ hello_dict = {"Hello": "World"}
 def home():
     print("Server received request for 'Home' page...")
     return (
-        f"Welcome to the Honolulu Climate Analysis API<br/>"
-        f"Available routes are:<br/>"
-        f"<a href='/api/v1.0/precipitation'>/api/v1.0/precipitation</a><br/>"
-        f"<a href='/api/v1.0/stations'>/api/v1.0/stations</a><br/>"
-        f"<a href='/api/v1.0/tobs'>/api/v1.0/tobs</a><br/>"
-        f"<a href='#'>/api/v1.0/start</a><br/>"
-        f"<a href='#'>/api/v1.0/start/end</a>"
+        f"<h2>Welcome to the Honolulu Climate Analysis API</h2>"
+        f"<h3>Available routes are:</h3>"
+        f"<h4>Static Routes</h4>"
+
+        f"<p>Precipitation data for dates 2016-08-23 to 2017-08-23</br>"
+        f"<a href='/api/v1.0/precipitation'>/api/v1.0/precipitation</a></p>"
+
+        f"<p>Observation stations inlcuding location details and observation count</br>"
+        f"<a href='/api/v1.0/stations'>/api/v1.0/stations</a></p>"
+
+        f"<p>Temperature data for the most active station (WAIKIKI 717.2, HI US) </br>"
+        f"for dates 2016-08-23 to 2017-08-23.</br>"
+        f"<a href='/api/v1.0/tobs'>/api/v1.0/tobs</a></p>"
+
+        f"<h4>Dynamic Routes</h4>"
+
+        f"<p>Route accepts the date parameters (yyyy-mm-dd) in the url to return the <br>"
+        f"minimum, average and maximum temperature for a given start or start-end range.</br>"
+        f"<em>Full data range is 2010-01-01 to 2017-08-23</em><br/><br/>"
+        f"/api/v1.0/start<br/>"
+        f"/api/v1.0/start/end</p>"
+
     )
 
 #################################################
@@ -169,6 +184,7 @@ def start_date(start):
 
     #Calculate start and end dates for the prevoius year
     #start_date = startdt - dt.timedelta(days=365)
+    #start_date = start
     
     Startsummary = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), \
         func.max(Measurement.tobs)).\
@@ -187,18 +203,33 @@ def start_date(start):
 
     return jsonify(startlist)
 
-    
-
-
-
-    
-
 #################################################
 # Start End Date 
 #################################################
-#@app.route("/api/v1.0/<start>/<end>")
-#def end_date(end):
+@app.route("/api/v1.0/<start>/<end>")
+def end_date(start, end):
 
+    session = Session(engine)
+
+    #start_date = start
+    #end_date = end
+
+    Startendsummary = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), \
+        func.max(Measurement.tobs)).\
+        filter(Measurement.date >= start).filter(Measurement.date <= end).all()
+
+    session.close()
+
+    startendlist = [
+    #for min, av, max  in Startsummary:
+    #start_dict =
+    {
+    "minimum": Startendsummary[0][0],
+    "average": Startendsummary[0][1],
+    "maximum": Startendsummary[0][2]}]
+    #waiheelist.append(waihee_dict)
+
+    return jsonify(startendlist)
 
 #def justice_league_character(real_name):
 #    """Fetch the Justice League character whose real_name matches
@@ -212,9 +243,6 @@ def start_date(start):
 #            return jsonify(character)
 
 #    return jsonify({"error": f"Character with real_name {real_name} not found."}), 404
-
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)
