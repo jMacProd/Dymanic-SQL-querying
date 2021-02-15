@@ -29,9 +29,6 @@ Station = Base.classes.station
 #################################################
 app = Flask(__name__)
 
-#Define dictionary
-hello_dict = {"Hello": "World"}
-
 #################################################
 # Flask Routes
 #################################################
@@ -89,7 +86,6 @@ def precipitation():
     for date, prcp in precip:
         precip_dict = {}
         precip_dict[date] = prcp
-        #precip_dict["prcp"] = prcp
         precipitation.append(precip_dict)
 
     return jsonify(precipitation)
@@ -167,9 +163,9 @@ def tobs():
 #################################################
 # Start Date 
 #################################################
-#@app.route("/api/v1.0/justice-league/real_name/<real_name>")
+    #@app.route("/api/v1.0/justice-league/real_name/<real_name>")
     # I think how the justice one works is real_name is the index, <real_name> is the value that you input
-    # So for start date, judging by the provided the the actual date is the index>?
+    # So for start date, judging by the provided the the actual date is the index?
 @app.route("/api/v1.0/<start>")
 
 #def justice_league_by_real_name(real_name):
@@ -178,14 +174,6 @@ def start_date(start):
 
     session = Session(engine)
 
-    #convert to datetime
-    #startdt = dt.datetime.strptime(start, '%Y/%m/%d')
-    #enddt = dt.datetime.strptime('2017-08-23', '%Y/%m/%d')
-
-    #Calculate start and end dates for the prevoius year
-    #start_date = startdt - dt.timedelta(days=365)
-    #start_date = start
-    
     Startsummary = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), \
         func.max(Measurement.tobs)).\
         filter(Measurement.date >= start).filter(Measurement.date <= '2017-08-23').all()
@@ -193,13 +181,10 @@ def start_date(start):
     session.close()
 
     startlist = [
-    #for min, av, max  in Startsummary:
-    #start_dict =
     {
     "minimum": Startsummary[0][0],
     "average": Startsummary[0][1],
     "maximum": Startsummary[0][2]}]
-    #waiheelist.append(waihee_dict)
 
     return jsonify(startlist)
 
@@ -211,9 +196,6 @@ def end_date(start, end):
 
     session = Session(engine)
 
-    #start_date = start
-    #end_date = end
-
     Startendsummary = session.query(func.min(Measurement.tobs), func.avg(Measurement.tobs), \
         func.max(Measurement.tobs)).\
         filter(Measurement.date >= start).filter(Measurement.date <= end).all()
@@ -221,28 +203,13 @@ def end_date(start, end):
     session.close()
 
     startendlist = [
-    #for min, av, max  in Startsummary:
-    #start_dict =
     {
     "minimum": Startendsummary[0][0],
     "average": Startendsummary[0][1],
     "maximum": Startendsummary[0][2]}]
-    #waiheelist.append(waihee_dict)
 
     return jsonify(startendlist)
 
-#def justice_league_character(real_name):
-#    """Fetch the Justice League character whose real_name matches
-#       the path variable supplied by the user, or a 404 if not."""
-
-#    canonicalized = real_name.replace(" ", "").lower()
-#    for character in justice_league_members:
-#        search_term = character["real_name"].replace(" ", "").lower()
-
-#        if search_term == canonicalized:
-#            return jsonify(character)
-
-#    return jsonify({"error": f"Character with real_name {real_name} not found."}), 404
 
 if __name__ == "__main__":
     app.run(debug=True)
