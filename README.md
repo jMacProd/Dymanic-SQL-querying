@@ -1,5 +1,5 @@
 # SQLAlchemy-challenge
-Python and SQLAlchemy were used to do basic climate analysis and data exploration of a climate database. Using Python for initial analysis querying last 12 months of climate data and climate station activity, a Flask API was created where the end user is able to search for information based on a specific date or date range.
+Python and SQLAlchemy were used to do basic climate analysis and data exploration of a climate database. Using Python for initial analysis querying last 12 months of climate data and climate station activity, a Flask API was established with routes for the query results. The end user is able to search for information based on a specific date or date range.
 
 ## Status
 * Finalised
